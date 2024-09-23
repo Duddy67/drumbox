@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 //console.log(tracks.getTracks('snare'));
 //console.log(tracks.getTracks('kick'));
 //console.log(tracks.getTracks('hihat'));
+    createLEDRow(tracks);
     createTracks(tracks);
 
     document.getElementById('start-stop').addEventListener('click', (e) => {
@@ -42,6 +43,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
+function createLEDRow(tracks) {
+    let LEDRow = document.createElement('div');
+    LEDRow.setAttribute('id', 'LED-row');
+    LEDRow.setAttribute('class', 'row mb-4');
+
+    for (let i = 0; i < tracks.getResolution(); i++) {
+        let LED = document.createElement('div');
+        LED.setAttribute('id', 'LED-' + i);
+        LED.setAttribute('class', 'LED me-3');
+
+        let label = document.createElement('span');
+        label.setAttribute('class', 'beat-number text-center');
+        label.innerHTML += i + 1; 
+
+        LED.append(label);
+
+        let blink = document.createElement('span');
+        blink.setAttribute('class', 'blinking-LED');
+        blink.innerHTML += '&nbsp;'; 
+
+        LED.append(blink);
+
+        // Add the LED to the row.
+        LEDRow.append(LED);
+    }
+
+    // Add the LED row to the drumbox.
+    document.getElementById('16th-note-LEDs').append(LEDRow);
+}
 
 function createTracks(tracks) {
 
