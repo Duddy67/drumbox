@@ -46,7 +46,16 @@ class Track {
         return this.#tracks;
     }
 
+    getTrackByIndex(index) {
+
+    } 
+
     getResolution() {
         return this.#resolution;
+    }
+
+    setStep(id, step) {
+        let track = this.#tracks.find(track => track.id == id);
+        track.steps[step] = track.steps[step] == 1 ? 0 : 1;
     }
 }

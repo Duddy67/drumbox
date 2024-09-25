@@ -137,13 +137,12 @@ class Sequencer {
                 const noteValue = currentNote % 4 ? '16th' : '4th';
                 // Turn off the previous step button.
                 this.#resetStepButtons();
-                // Turn on the step button corresponding to the current note.
-                document.getElementById('step-' + currentNote).classList.add('blink-' + noteValue);
 
                 for (let i = 0; i < this.#tracks.getTracks().length; i++) {
                     const track = this.#tracks.getTracks()[i];
                     if (track.steps[currentNote]) {
-                        document.getElementById('step-' + i + '-' + currentNote).classList.add('blink-' + noteValue);
+                        //document.getElementById('step-' + i + '-' + currentNote).classList.add('blink-' + noteValue);
+                        document.getElementById('LED-' + i + '-' + currentNote).classList.add('blinking');
                     }
                 }
 
@@ -168,6 +167,11 @@ class Sequencer {
         for (let i = 0; i < stepButtons.length; i++) {
             stepButtons[i].classList.remove('blink-4th');
             stepButtons[i].classList.remove('blink-16th');
+        }
+
+        const blinkingLED = document.querySelectorAll('.blinking');
+        for (let i = 0; i < blinkingLED.length; i++) {
+            blinkingLED[i].classList.remove('blinking');
         }
     }
 

@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 //console.log(tracks.getTracks('snare'));
 //console.log(tracks.getTracks('kick'));
 //console.log(tracks.getTracks('hihat'));
-    createLEDRow(tracks);
+    createBeatNumbers(tracks);
     createTracks(tracks);
 
     document.getElementById('start-stop').addEventListener('click', (e) => {
@@ -41,37 +41,47 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('resolution').addEventListener('change', (e) => {
         sequencer.setResolution(e.target.value);
     });
+
+    const steps = document.querySelectorAll('.step');
+
+    for (let i = 0; i < steps.length; i++) {
+        steps[i].addEventListener('click', (e) => {
+            // The step is already selected.
+            if (e.target.classList.contains('selected')) {
+                e.target.classList.remove('selected');
+            }
+            // Select the step.
+            else {
+                e.target.classList.add('selected');
+            }
+
+            tracks.setStep(e.target.dataset.trackId, e.target.dataset.stepNumber)
+
+            console.log(tracks.getTracks(e.target.dataset.trackId));
+        });
+    }
 });
 
 
-function createLEDRow(tracks) {
-    let LEDRow = document.createElement('div');
-    LEDRow.setAttribute('id', 'LED-row');
-    LEDRow.setAttribute('class', 'row mb-4');
+function createBeatNumbers(tracks) {
+    let beatNumbers = document.createElement('div');
+    beatNumbers.setAttribute('class', 'row mb-4');
 
     for (let i = 0; i < tracks.getResolution(); i++) {
-        let LED = document.createElement('div');
-        LED.setAttribute('id', 'LED-' + i);
-        LED.setAttribute('class', 'LED me-3');
+        let beatNumber = document.createElement('div');
+        beatNumber.setAttribute('class', 'beat-number text-center me-3');
 
         let label = document.createElement('span');
-        label.setAttribute('class', 'beat-number text-center');
         label.innerHTML += i + 1; 
 
-        LED.append(label);
+        beatNumber.append(label);
 
-        let blink = document.createElement('span');
-        blink.setAttribute('class', 'blinking-LED');
-        blink.innerHTML += '&nbsp;'; 
-
-        LED.append(blink);
-
-        // Add the LED to the row.
-        LEDRow.append(LED);
+        // Add the beat number to the row.
+        beatNumbers.append(beatNumber);
     }
 
-    // Add the LED row to the drumbox.
-    document.getElementById('16th-note-LEDs').append(LEDRow);
+    // Add the beat numbers to the drumbox.
+    document.getElementById('16th-notes').append(beatNumbers);
 }
 
 function createTracks(tracks) {
@@ -85,15 +95,26 @@ function createTracks(tracks) {
             let step = document.createElement('div');
             step.setAttribute('id', 'step-' + i + '-' + j);
             step.setAttribute('class', 'step d-flex justify-content-center me-3');
+            step.setAttribute('data-step-number', j);
+            step.setAttribute('data-track-id', tracks.getTracks()[i].id);
 
-            let label = document.createElement('span');
-            label.innerHTML += 'O'; 
+            let LED = document.createElement('span');
+            LED.setAttribute('class', 'LED');
+            LED.setAttribute('id', 'LED-' + i + '-' + j);
+            LED.innerHTML += '&nbsp;'; 
 
-            step.append(label);
+            step.append(LED);
 
             // Add the step to the track.
             track.append(step);
         }
+
+        let label = document.createElement('div');
+            label.setAttribute('class', 'col-12');
+            label.innerHTML += 'Track ' + i; 
+
+        // Add the label to the track list.
+        document.getElementById('track-list').append(label);
 
         // Add the track to the track list.
         document.getElementById('track-list').append(track);
