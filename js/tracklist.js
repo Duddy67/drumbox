@@ -1,5 +1,5 @@
 
-class Track {
+class TrackList {
     #tracks = [];
     #resolution = 16;
     #index = 0;

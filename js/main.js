@@ -1,20 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const tracks = new Track();
-    const sound = new Sound();
-    const sequencer = new Sequencer(sound, tracks);
+    const trackList = new TrackList();
+    const soundList = new SoundList();
+    const sequencer = new Sequencer(soundList, trackList);
 
-    tracks.addTrack('snare');
-    tracks.setTrack('snare', [4, 12]);
-    tracks.addTrack('kick');
-    tracks.setTrack('kick', [0, 7, 10]);
-    tracks.addTrack('hihat');
-    tracks.setTrack('hihat', [0, 2, 4, 6, 8, 10, 12, 14]);
-//console.log(tracks.getTracks('snare'));
-//console.log(tracks.getTracks('kick'));
-//console.log(tracks.getTracks('hihat'));
-    createBeatNumbers(tracks);
-    createTracks(tracks);
+    trackList.addTrack('kick');
+    trackList.addTrack('snare');
+    trackList.addTrack('hihat');
+
+    createBeatNumbers(trackList);
+    createTracks(trackList);
 
     document.getElementById('start-stop').addEventListener('click', (e) => {
         if (sequencer.isPlaying()) {
@@ -45,29 +40,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const steps = document.querySelectorAll('.step');
 
     for (let i = 0; i < steps.length; i++) {
+        // Listen to the clicked steps.
         steps[i].addEventListener('click', (e) => {
+            // In case the span child (LED) has been clicked.
+            const step = e.target.tagName == 'SPAN' ? e.target.parentNode : e.target;
+
             // The step is already selected.
-            if (e.target.classList.contains('selected')) {
-                e.target.classList.remove('selected');
+            if (step.classList.contains('selected')) {
+                step.classList.remove('selected');
             }
             // Select the step.
             else {
-                e.target.classList.add('selected');
+                step.classList.add('selected');
             }
 
-            tracks.setStep(e.target.dataset.trackId, e.target.dataset.stepNumber)
-
-            console.log(tracks.getTracks(e.target.dataset.trackId));
+            trackList.setStep(step.dataset.trackId, step.dataset.stepNumber)
         });
     }
 });
 
 
-function createBeatNumbers(tracks) {
+function createBeatNumbers(trackList) {
     let beatNumbers = document.createElement('div');
     beatNumbers.setAttribute('class', 'row mb-4');
 
-    for (let i = 0; i < tracks.getResolution(); i++) {
+    // Create the beat numbers according to the track resolution.
+    for (let i = 0; i < trackList.getResolution(); i++) {
         let beatNumber = document.createElement('div');
         beatNumber.setAttribute('class', 'beat-number text-center me-3');
 
@@ -84,19 +82,20 @@ function createBeatNumbers(tracks) {
     document.getElementById('16th-notes').append(beatNumbers);
 }
 
-function createTracks(tracks) {
+function createTracks(trackList) {
 
-    for (let i = 0; i < tracks.getTracks().length; i++) {
+    for (let i = 0; i < trackList.getTracks().length; i++) {
         let track = document.createElement('div');
             track.setAttribute('id', 'track-' + i);
             track.setAttribute('class', 'row mb-4');
 
-        for (let j = 0; j < tracks.getResolution(); j++) {
+        // Create the steps according to the track resolution.
+        for (let j = 0; j < trackList.getResolution(); j++) {
             let step = document.createElement('div');
             step.setAttribute('id', 'step-' + i + '-' + j);
             step.setAttribute('class', 'step d-flex justify-content-center me-3');
             step.setAttribute('data-step-number', j);
-            step.setAttribute('data-track-id', tracks.getTracks()[i].id);
+            step.setAttribute('data-track-id', trackList.getTracks()[i].id);
 
             let LED = document.createElement('span');
             LED.setAttribute('class', 'LED');

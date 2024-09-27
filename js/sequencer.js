@@ -30,17 +30,17 @@ class Sequencer {
     #lookahead = 25.0;
     // The last "box" drawn on the screen.
     #last16thNoteDrawn = -1;
-    #sound;
-    #tracks;
+    #soundList;
+    #trackList;
 
-    constructor(sound, tracks) {
+    constructor(soundList, trackList) {
         // Start the drawing loop.
         window.requestAnimationFrame(this.#draw);
         // Create a worker.
         this.#setupTimeWorker();
 
-        this.#sound = sound;
-        this.#tracks = tracks;
+        this.#soundList = soundList;
+        this.#trackList = trackList;
     }
 
     #setupTimeWorker() {
@@ -95,16 +95,18 @@ class Sequencer {
             return;
         }
 
-        if (this.#tracks.getTracks('snare').steps[beatNumber]) {
-            this.#sound.play(0, time);
+        // Check the beat number for each track step. 
+
+        if (this.#trackList.getTracks('snare').steps[beatNumber]) {
+            this.#soundList.play(0, time);
         }
 
-        if (this.#tracks.getTracks('kick').steps[beatNumber]) {
-            this.#sound.play(2, time);
+        if (this.#trackList.getTracks('kick').steps[beatNumber]) {
+            this.#soundList.play(2, time);
         }
 
-        if (this.#tracks.getTracks('hihat').steps[beatNumber]) {
-            this.#sound.play(1, time);
+        if (this.#trackList.getTracks('hihat').steps[beatNumber]) {
+            this.#soundList.play(1, time);
         }
     }
 
@@ -138,8 +140,8 @@ class Sequencer {
                 // Turn off the previous step button.
                 this.#resetStepButtons();
 
-                for (let i = 0; i < this.#tracks.getTracks().length; i++) {
-                    const track = this.#tracks.getTracks()[i];
+                for (let i = 0; i < this.#trackList.getTracks().length; i++) {
+                    const track = this.#trackList.getTracks()[i];
                     if (track.steps[currentNote]) {
                         //document.getElementById('step-' + i + '-' + currentNote).classList.add('blink-' + noteValue);
                         document.getElementById('LED-' + i + '-' + currentNote).classList.add('blinking');
@@ -150,8 +152,8 @@ class Sequencer {
             }
         }
 
-        // The box is not playing and a step button is on.
-        if (!this.#isPlaying && document.querySelectorAll('[class*="blink-"]').length) {
+        // The box is not playing and one or more LEDs are on.
+        if (!this.#isPlaying && document.querySelectorAll('.blinking').length) {
             this.#resetStepButtons();
         }
 
@@ -162,16 +164,10 @@ class Sequencer {
      * Turns off step buttons. 
      */
     #resetStepButtons() {
-        const stepButtons = document.querySelectorAll('[class*="blink-"]');
+        const blinkingLEDs = document.querySelectorAll('.blinking');
 
-        for (let i = 0; i < stepButtons.length; i++) {
-            stepButtons[i].classList.remove('blink-4th');
-            stepButtons[i].classList.remove('blink-16th');
-        }
-
-        const blinkingLED = document.querySelectorAll('.blinking');
-        for (let i = 0; i < blinkingLED.length; i++) {
-            blinkingLED[i].classList.remove('blinking');
+        for (let i = 0; i < blinkingLEDs.length; i++) {
+            blinkingLEDs[i].classList.remove('blinking');
         }
     }
 
@@ -181,7 +177,7 @@ class Sequencer {
             this.#audioContext = new AudioContext();
 
             // Load the audio files asynchronously.
-            this.#sound.setupSounds(this.#audioContext).then((response) => {
+            this.#soundList.setupSounds(this.#audioContext).then((response) => {
                 console.log('Loading sound files...');
                 // Start again once all the audio files are loaded.
                 this.start();

@@ -1,5 +1,5 @@
 
-class Sound {
+class SoundList {
     // The Web Audio Context.
     #audioContext = null;
     // Default sound duration.
@@ -7,6 +7,7 @@ class Sound {
     #oscillator;
     // Paths to the audio files. 
     #files = ['samples/808snare.wav', 'samples/808hihat.wav', 'samples/808kick.wav'];
+    // The audio buffers to store sounds.
     #audioBuffers = [];
 
     constructor() {
@@ -57,10 +58,11 @@ class Sound {
             // Store the sound.
             this.#audioBuffers.push(sound);
         }
-        console.log(this.#audioBuffers);
-        //return audioBuffers;
     }
 
+    /*
+     * Play a given sound from the audio buffers.
+     */
     play(index, time) {
         const audioBuffer = this.#audioBuffers[index];
         // Create a sound source.
