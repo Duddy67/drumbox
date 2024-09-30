@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     trackList.addTrack('kick');
     trackList.addTrack('snare');
     trackList.addTrack('hihat');
+    trackList.addTrack('cowbell');
 
     createBeatNumbers(trackList);
     createTracks(trackList);

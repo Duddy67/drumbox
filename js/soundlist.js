@@ -21,19 +21,6 @@ class SoundList {
         return oscillator;
     }
 
-    #playOscillator(time, frequency) {
-        // Set frequency (default 440 hz).
-        frequency = frequency !== undefined ? frequency : 440.0;
-
-        this.#oscillator = this.#getOscillator();
-        this.#oscillator.frequency.value = frequency;
-
-        // Play sound.
-        this.#oscillator.start(time);
-        // Stop sound after note length.
-        this.#oscillator.stop(time + this.#noteLength);
-    }
-
     /*
      * Asynchronous function that loads the given audio file and returns its decoded audio data.
      */
@@ -73,5 +60,18 @@ class SoundList {
         soundSource.connect(this.#audioContext.destination);
         // Play the sound.
         soundSource.start(time);
+    }
+
+    playOscillator(time, frequency) {
+        // Set frequency (default 440 hz).
+        frequency = frequency !== undefined ? frequency : 440.0;
+
+        this.#oscillator = this.#getOscillator();
+        this.#oscillator.frequency.value = frequency;
+
+        // Play sound.
+        this.#oscillator.start(time);
+        // Stop sound after note length.
+        this.#oscillator.stop(time + this.#noteLength);
     }
 }

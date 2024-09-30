@@ -108,6 +108,10 @@ class Sequencer {
         if (this.#trackList.getTracks('hihat').steps[beatNumber]) {
             this.#soundList.play(1, time);
         }
+
+        if (this.#trackList.getTracks('cowbell').steps[beatNumber]) {
+            this.#soundList.playOscillator(time);
+        }
     }
 
     #scheduler() {
