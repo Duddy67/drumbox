@@ -50,24 +50,36 @@ class SoundList {
     /*
      * Play a given sound from the audio buffers.
      */
-    play(index, time) {
+    play(index, time, volume) {
         const audioBuffer = this.#audioBuffers[index];
         // Create a sound source.
         const soundSource = this.#audioContext.createBufferSource();
         // Tell the source which sound to play.
         soundSource.buffer = audioBuffer;
-        // Connect the source to the context's destination (the speakers).
-        soundSource.connect(this.#audioContext.destination);
+        // Create a gain node.
+        const gainNode = this.#audioContext.createGain();
+        // Connect the source to the gain node.
+        soundSource.connect(gainNode);
+        // Connect the gain node to the context's destination (the speakers).
+        gainNode.connect(this.#audioContext.destination);
+        // Set the volume for this sound.
+        gainNode.gain.value = volume;
         // Play the sound.
         soundSource.start(time);
     }
 
-    playOscillator(time, frequency) {
+    playOscillator(time, volume, frequency) {
         // Set frequency (default 440 hz).
         frequency = frequency !== undefined ? frequency : 440.0;
 
         this.#oscillator = this.#getOscillator();
         this.#oscillator.frequency.value = frequency;
+
+        const gainNode = this.#audioContext.createGain();
+        this.#oscillator.connect(gainNode);
+        gainNode.connect(this.#audioContext.destination);
+        // Oscillator volume uses negative numbers, so the given volume value is converted accordingly.
+        gainNode.gain.value = volume - 1;
 
         // Play sound.
         this.#oscillator.start(time);

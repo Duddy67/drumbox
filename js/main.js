@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    document.getElementById('volume').addEventListener('input', (e) => {
+        sequencer.setVolume(e.target.value);
+    });
+
     document.getElementById('resolution').addEventListener('change', (e) => {
         sequencer.setResolution(e.target.value);
     });

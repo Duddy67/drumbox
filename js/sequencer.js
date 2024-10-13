@@ -32,6 +32,7 @@ class Sequencer {
     #last16thNoteDrawn = -1;
     #soundList;
     #trackList;
+    #volume = 1;
 
     constructor(soundList, trackList) {
         // Start the drawing loop.
@@ -98,19 +99,19 @@ class Sequencer {
         // Check the beat number for each track step. 
 
         if (this.#trackList.getTracks('snare').steps[beatNumber]) {
-            this.#soundList.play(0, time);
+            this.#soundList.play(0, time, this.#volume);
         }
 
         if (this.#trackList.getTracks('kick').steps[beatNumber]) {
-            this.#soundList.play(2, time);
+            this.#soundList.play(2, time, this.#volume);
         }
 
         if (this.#trackList.getTracks('hihat').steps[beatNumber]) {
-            this.#soundList.play(1, time);
+            this.#soundList.play(1, time, this.#volume);
         }
 
         if (this.#trackList.getTracks('cowbell').steps[beatNumber]) {
-            this.#soundList.playOscillator(time);
+            this.#soundList.playOscillator(time, this.#volume);
         }
     }
 
@@ -229,7 +230,15 @@ class Sequencer {
         this.#noteResolution = resolution;   
     }
 
+    setVolume(volume) {
+        this.#volume = volume;   
+    }
+
     isPlaying() {
         return this.#isPlaying;
+    }
+
+    getAudioContext() {
+        return this.#audioContext;
     }
 }

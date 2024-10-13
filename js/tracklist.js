@@ -17,7 +17,7 @@ class TrackList {
 
         this.#index = this.#index + 1;
 
-        const track = {id: id, steps: steps, index: this.#index};
+        const track = {id: id, steps: steps, index: this.#index, volume: 1};
 
         this.#tracks.push(track);
     }
