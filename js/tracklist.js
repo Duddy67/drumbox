@@ -8,7 +8,7 @@ class TrackList {
 
     }
 
-    addTrack(id) {
+    addTrack(id, soundIndex) {
         let steps = [];
 
         for (let i = 0; i < this.#resolution; i++) {
@@ -16,8 +16,10 @@ class TrackList {
         }
 
         this.#index = this.#index + 1;
+        soundIndex = soundIndex !== undefined ? soundIndex : null;
 
-        const track = {id: id, steps: steps, index: this.#index, volume: 1};
+        // Set the track parameters.
+        const track = {id: id, steps: steps, index: this.#index, soundIndex: soundIndex, delay: 0, feedback: 0};
 
         this.#tracks.push(track);
     }

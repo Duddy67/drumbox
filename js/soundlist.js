@@ -9,6 +9,11 @@ class SoundList {
     #files = ['samples/808snare.wav', 'samples/808hihat.wav', 'samples/808kick.wav'];
     // The audio buffers to store sounds.
     #audioBuffers = [];
+    #source;
+    // The general volume.
+    #master;
+    // The sound indexes in the audio buffer array.
+    #soundIndexes = {kick: 2, snare: 0, hihat: 1};
 
     constructor() {
     }
@@ -19,6 +24,17 @@ class SoundList {
         oscillator.connect(this.#audioContext.destination);
 
         return oscillator;
+    }
+
+    #delay(time, feedbackValue) {
+        const delay =  this.#audioContext.createDelay();
+        this.#source.connect(delay);
+        delay.delayTime.value = time;
+        const feedback = this.#audioContext.createGain();
+        feedback.gain.value = feedbackValue;
+        feedback.connect(delay);
+        delay.connect(feedback);
+        delay.connect(this.#master);
     }
 
     /*
@@ -50,25 +66,28 @@ class SoundList {
     /*
      * Play a given sound from the audio buffers.
      */
-    play(index, time, volume) {
+    play(index, time, parameters) {
         const audioBuffer = this.#audioBuffers[index];
         // Create a sound source.
-        const soundSource = this.#audioContext.createBufferSource();
+        this.#source = this.#audioContext.createBufferSource();
         // Tell the source which sound to play.
-        soundSource.buffer = audioBuffer;
+        this.#source.buffer = audioBuffer;
         // Create a gain node.
-        const gainNode = this.#audioContext.createGain();
+        this.#master = this.#audioContext.createGain();
         // Connect the source to the gain node.
-        soundSource.connect(gainNode);
+        this.#source.connect(this.#master);
         // Connect the gain node to the context's destination (the speakers).
-        gainNode.connect(this.#audioContext.destination);
+        this.#master.connect(this.#audioContext.destination);
         // Set the volume for this sound.
-        gainNode.gain.value = volume;
+        this.#master.gain.value = parameters.volume;
+
+        this.#delay(parameters.delay, parameters.feedback);
+
         // Play the sound.
-        soundSource.start(time);
+        this.#source.start(time);
     }
 
-    playOscillator(time, volume, frequency) {
+    playOscillator(time, parameters, frequency) {
         // Set frequency (default 440 hz).
         frequency = frequency !== undefined ? frequency : 440.0;
 
@@ -79,11 +98,15 @@ class SoundList {
         this.#oscillator.connect(gainNode);
         gainNode.connect(this.#audioContext.destination);
         // Oscillator volume uses negative numbers, so the given volume value is converted accordingly.
-        gainNode.gain.value = volume - 1;
+        gainNode.gain.value = parameters.volume - 1;
 
         // Play sound.
         this.#oscillator.start(time);
         // Stop sound after note length.
         this.#oscillator.stop(time + this.#noteLength);
+    }
+
+    getSoundIndexes() {
+        return this.#soundIndexes;
     }
 }

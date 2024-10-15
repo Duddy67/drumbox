@@ -32,7 +32,8 @@ class Sequencer {
     #last16thNoteDrawn = -1;
     #soundList;
     #trackList;
-    #volume = 1;
+    // The sound parameters.
+    #parameters = {volume: 1, delay: 0, feedback: 0};
 
     constructor(soundList, trackList) {
         // Start the drawing loop.
@@ -98,20 +99,14 @@ class Sequencer {
 
         // Check the beat number for each track step. 
 
-        if (this.#trackList.getTracks('snare').steps[beatNumber]) {
-            this.#soundList.play(0, time, this.#volume);
-        }
-
-        if (this.#trackList.getTracks('kick').steps[beatNumber]) {
-            this.#soundList.play(2, time, this.#volume);
-        }
-
-        if (this.#trackList.getTracks('hihat').steps[beatNumber]) {
-            this.#soundList.play(1, time, this.#volume);
-        }
-
-        if (this.#trackList.getTracks('cowbell').steps[beatNumber]) {
-            this.#soundList.playOscillator(time, this.#volume);
+        for (let i = 0; i < this.#trackList.getTracks().length; i++) {
+            if (this.#trackList.getTracks()[i].steps[beatNumber]) {
+                // Get the track parameter values.
+                this.#parameters.delay = this.#trackList.getTracks()[i].delay;
+                this.#parameters.feedback = this.#trackList.getTracks()[i].feedback;
+                // Play the sound associated to the track.
+                this.#soundList.play(this.#trackList.getTracks()[i].soundIndex, time, this.#parameters);
+            }
         }
     }
 
@@ -231,11 +226,15 @@ class Sequencer {
     }
 
     setVolume(volume) {
-        this.#volume = volume;   
+        this.#parameters.volume = volume;   
     }
 
     isPlaying() {
         return this.#isPlaying;
+    }
+
+    getTrackList() {
+        return this.#trackList;
     }
 
     getAudioContext() {

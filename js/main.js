@@ -4,10 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const soundList = new SoundList();
     const sequencer = new Sequencer(soundList, trackList);
 
-    trackList.addTrack('kick');
-    trackList.addTrack('snare');
-    trackList.addTrack('hihat');
-    trackList.addTrack('cowbell');
+    const soundIndexes = soundList.getSoundIndexes();
+
+    // Create a track for each sound index. 
+    Object.keys(soundIndexes).forEach(function(key) {
+        trackList.addTrack(key, soundIndexes[key]);
+    });
 
     createBeatNumbers(trackList);
     createTracks(trackList);
@@ -42,6 +44,19 @@ document.addEventListener('DOMContentLoaded', () => {
         sequencer.setResolution(e.target.value);
     });
 
+    // Check for track sliders.
+    const sliders = document.querySelectorAll('.track-slider');
+
+    for (let i = 0; i < sliders.length; i++) {
+        sliders[i].addEventListener('input', (e) => {
+            // Get the modified track.
+            const track = sequencer.getTrackList().getTracks(e.target.dataset.trackId);
+            // Set the new track parameter value.
+            track[e.target.dataset.type] = e.target.value;
+        });
+    }
+
+    // Check for track steps.
     const steps = document.querySelectorAll('.step');
 
     for (let i = 0; i < steps.length; i++) {
@@ -114,13 +129,48 @@ function createTracks(trackList) {
         }
 
         let label = document.createElement('div');
-            label.setAttribute('class', 'col-12');
-            label.innerHTML += 'Track ' + i; 
+            label.setAttribute('class', 'col-2');
+            label.innerHTML += trackList.getTracks()[i].id; 
 
         // Add the label to the track list.
         document.getElementById('track-list').append(label);
+
+        document.getElementById('track-list').append(createSlider(trackList.getTracks()[i].id, 'delay'));
+        document.getElementById('track-list').append(createSlider(trackList.getTracks()[i].id, 'feedback'));
 
         // Add the track to the track list.
         document.getElementById('track-list').append(track);
     }
 }
+
+function createSlider(trackId, type) {
+    let col = document.createElement('div');
+    col.setAttribute('class', 'col-4 border-top pt-2 pb-2');
+
+    let slider = document.createElement('input');
+    slider.setAttribute('id', type + '-' + trackId);
+    slider.setAttribute('class', 'track-slider ms-2 me-2');
+    slider.setAttribute('type', 'range');
+    slider.setAttribute('min', '0.0');
+    slider.setAttribute('max', '1.0');
+    slider.setAttribute('step', '0.1');
+    slider.setAttribute('value', '0');
+    slider.setAttribute('data-track-id', trackId);
+    slider.setAttribute('data-type', type);
+    slider.setAttribute('oninput', 'this.nextElementSibling.value = this.value;');
+    
+    let label = document.createElement('label');
+        label.setAttribute('for',  type + '-' + trackId);
+        label.innerHTML += type; 
+
+    col.append(label);
+    col.append(slider);
+
+    let output = document.createElement('output');
+    output.innerHTML += '0'; 
+
+    col.append(output);
+
+    return col;
+}
+
